@@ -1,0 +1,131 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.zyb</groupId>
+	<artifactId>jmeterMaven</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<!-- name是maven工程继承的时候会使用，url相当于简介的作用，程序中无实际作用 -->
+	<!-- 项目名称，Maven产生的文档用 -->
+	<name>maven3jmeter</name>
+	<!-- 项目主页的URL，Maven产生的文档用 -->
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<!-- 让整个项目统一字符集编码 -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jmeter.result.jtl.dir>${project.build.directory}\jmeter\results</jmeter.result.jtl.dir>
+		<jmeter.result.html.dir>${project.build.directory}\jmeter\html</jmeter.result.html.dir>
+	</properties>
+
+	<dependencies>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- 核心插件，用来执行jmx脚本 -->
+				<groupId>com.lazerycode.jmeter</groupId>
+				<artifactId>jmeter-maven-plugin</artifactId>
+				<version>2.9.0</version>
+				<executions>
+					<execution>
+						<!-- 标识符 -->
+						<id>jmeter-tests</id>
+						<!-- 声明goals执行的时期，例如：verify -->
+						<phase>verify</phase>
+						<!--脚本所在的文件夹 -->
+						<goals>
+							<goal>jmeter</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- 设置jmeter生成结果文件格式 -->
+					<resultsFileFormat>xml</resultsFileFormat>
+					<!-- 设置忽略失败是否停止运行 -->
+					<ignoreResultFailures>true</ignoreResultFailures>
+					<!--设置结果是否有时间戳 -->
+					<!-- <testResultsTimestamp>true</testResultsTimestamp> -->
+					<!--设置报告名字日期格式 -->
+					<resultsFileNameDateFormat>yyyy-MM-dd-HH-mm-ss</resultsFileNameDateFormat>
+					<testFilesIncluded>
+						<jMeterTestFile>*.jmx</jMeterTestFile>
+					</testFilesIncluded>
+
+					<!-- Jmeter属性的设置 ,直接在pom.xml中配置，或者到jmeter安装目录中拷贝jmeter.properties到jmeter文件夹下 -->
+					<propertiesJMeter>
+						<sampleresult.default.encoding>utf-8</sampleresult.default.encoding>
+						<jmeter.save.saveservice.data_type>true</jmeter.save.saveservice.data_type>
+						<jmeter.save.saveservice.label>true</jmeter.save.saveservice.label>
+						<jmeter.save.saveservice.response_code>true</jmeter.save.saveservice.response_code>
+						<jmeter.save.saveservice.response_data>true</jmeter.save.saveservice.response_data>
+						<jmeter.save.saveservice.response_data.on_error>true</jmeter.save.saveservice.response_data.on_error>
+						<jmeter.save.saveservice.response_message>true</jmeter.save.saveservice.response_message>
+						<jmeter.save.saveservice.successful>true</jmeter.save.saveservice.successful>
+						<jmeter.save.saveservice.thread_name>true</jmeter.save.saveservice.thread_name>
+						<jmeter.save.saveservice.time>true</jmeter.save.saveservice.time>
+						<jmeter.save.saveservice.subresults>true</jmeter.save.saveservice.subresults>
+						<jmeter.save.saveservice.assertions>true</jmeter.save.saveservice.assertions>
+						<jmeter.save.saveservice.latency>true</jmeter.save.saveservice.latency>
+						<jmeter.save.saveservice.connect_time>true</jmeter.save.saveservice.connect_time>
+						<jmeter.save.saveservice.samplerData>true</jmeter.save.saveservice.samplerData>
+						<jmeter.save.saveservice.responseHeaders>true</jmeter.save.saveservice.responseHeaders>
+						<jmeter.save.saveservice.requestHeaders>true</jmeter.save.saveservice.requestHeaders>
+						<jmeter.save.saveservice.encoding>true</jmeter.save.saveservice.encoding>
+						<jmeter.save.saveservice.bytes>true</jmeter.save.saveservice.bytes>
+						<jmeter.save.saveservice.sent_bytes>true</jmeter.save.saveservice.sent_bytes>
+						<jmeter.save.saveservice.url>true</jmeter.save.saveservice.url>
+						<jmeter.save.saveservice.filename>true</jmeter.save.saveservice.filename>
+						<jmeter.save.saveservice.hostname>true</jmeter.save.saveservice.hostname>
+						<jmeter.save.saveservice.thread_counts>=true</jmeter.save.saveservice.thread_counts>
+						<jmeter.save.saveservice.sample_count>true</jmeter.save.saveservice.sample_count>
+						<jmeter.save.saveservice.idle_time>true</jmeter.save.saveservice.idle_time>
+					</propertiesJMeter>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<!-- 根据xsl模版把jtl文件转换成html，官网地址： http://www.mojohaus.org/xml-maven-plugin/examples/transform-saxon.html -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xml-maven-plugin</artifactId>
+				<version>1.0-beta-3</version>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>transform</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<transformationSets>
+						<!--可以设置多个transformationSet，生成多个对应xls模板的html报告 -->
+						<transformationSet>
+							<dir>${jmeter.result.jtl.dir}</dir>
+							<stylesheet>src\test\resources\jmeter.results.shanhe.me.xsl</stylesheet>
+							<outputDir>${jmeter.result.html.dir}</outputDir>
+							<!-- 把jtl格式转成html -->
+							<fileMappers>
+								<fileMapper
+									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+									<targetExtension>html</targetExtension>
+								</fileMapper>
+							</fileMappers>
+						</transformationSet>
+					</transformationSets>
+				</configuration>
+				<!-- using XSLT 2.0 -->
+				<dependencies>
+					<dependency>
+						<groupId>net.sf.saxon</groupId>
+						<artifactId>saxon</artifactId>
+						<version>8.7</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
