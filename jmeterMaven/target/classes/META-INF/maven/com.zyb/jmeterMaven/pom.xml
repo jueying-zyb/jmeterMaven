@@ -54,7 +54,7 @@
 						<jMeterTestFile>*.jmx</jMeterTestFile>
 					</testFilesIncluded>
 
-					<!-- Jmeter属性的设置 ,直接在pom.xml中配置， 或者到jmeter安装目录中拷贝jmeter.properties到jmeter文件夹下 -->
+					<!-- Jmeter属性的设置 ,直接在pom.xml中配置，或者到jmeter安装目录中拷贝jmeter.properties到jmeter文件夹下 -->
 					<propertiesJMeter>
 						<sampleresult.default.encoding>utf-8</sampleresult.default.encoding>
 						<jmeter.save.saveservice.data_type>true</jmeter.save.saveservice.data_type>
